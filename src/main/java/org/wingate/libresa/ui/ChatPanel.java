@@ -35,7 +35,7 @@ import org.wingate.libresa.net.ChatMessage;
 import org.wingate.libresa.net.Client;
 import org.wingate.libresa.net.Handler;
 import org.wingate.libresa.net.Node;
-import org.wingate.libresa.serve.Out;
+import org.wingate.libresa.serve.Protocol;
 
 /**
  *
@@ -118,6 +118,7 @@ public class ChatPanel extends javax.swing.JPanel {
         insertString(String.format("%s|%s %s -> %s", d, h, n, t));
     }
     
+    // Départ (Arrivé dans Handler)
     public void readMessage(ChatMessage cm){
         for(Node n : nodes){
             System.out.println(n);        
@@ -125,7 +126,12 @@ public class ChatPanel extends javax.swing.JPanel {
                     OutputStream out = socket.getOutputStream();
                     DataOutputStream dos = new DataOutputStream(out);)
             {
-                Out.chatGetMessage(dos, cm, uniqueName);
+                // Protocol
+                dos.writeUTF(Protocol.ChatMessage.getType());
+                // Unique name
+                dos.writeUTF(uniqueName);
+                // ChatMesssage all-in-one
+                cm.send(dos);
                 client.close(socket);
             } catch (IOException ex) {
                 Logger.getLogger(ChatPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -221,9 +227,11 @@ public class ChatPanel extends javax.swing.JPanel {
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         // Send text
-        ChatMessage cm = new ChatMessage(tfSendText.getText());
-        cm.setOwner(tfName.getText());
+        ChatMessage cm = new ChatMessage(tfName.getText(), tfSendText.getText());
+        // 1. Send to network
         readMessage(cm);
+        // 2. Display
+        writeMessage(cm);
     }//GEN-LAST:event_btnSendActionPerformed
 
 

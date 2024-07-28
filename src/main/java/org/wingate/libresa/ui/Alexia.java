@@ -100,11 +100,25 @@ public class Alexia {
                 case "chat" -> {
                     Handler handler = mainFrame.getHandler();
                     ChatPanel cp = new ChatPanel(handler, new Client());
+                    
+                    String uniqueName = attributes.getValue("name");
+                    if(uniqueName != null && uniqueName.isEmpty() == false){
+                        cp.setUniqueName(uniqueName);
+                    }
+                    
                     handler.getChatPanels().add(cp);
+                    
                     File currentFolder = new File(".");
                     File file = new File(currentFolder.getAbsolutePath() + File.separator + "nodes");
                     cp.getNodes().addAll(MainFrame.fillNodes(file.getPath()));
-                    insertComponent(cp.getChat());
+                    
+                    String width = attributes.getValue("width");
+                    String height = attributes.getValue("height");
+                    if(width != null && height != null && width.isEmpty() == false && height.isEmpty() == false){
+                        insertComponent(cp.getChat(Integer.parseInt(width), Integer.parseInt(height)));
+                    }else{
+                        insertComponent(cp.getChat());
+                    }                    
                 }
                 case "draw" -> { buffer = new StringBuffer(); }
             }

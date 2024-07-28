@@ -23,7 +23,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
-import org.wingate.libresa.serve.In;
 import org.wingate.libresa.serve.Protocol;
 import org.wingate.libresa.ui.ChatPanel;
 
@@ -53,10 +52,12 @@ public class Handler implements Runnable {
                     Protocol p = Protocol.search(dis.readUTF());
                     switch(p){
                         case ChatMessage -> {
+                            // Arrivé (Départ dans ChatPanel)
                             String uniqueName = dis.readUTF();
                             for(ChatPanel chat : chatPanels){
                                 if(uniqueName.equalsIgnoreCase(chat.getUniqueName())){
-                                    ChatMessage cm = In.chatGetMessage(dis);
+                                    ChatMessage cm = new ChatMessage();
+                                    cm.get(dis);
                                     chat.writeMessage(cm);
                                     break;
                                 }

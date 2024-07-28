@@ -16,34 +16,46 @@
  */
 package org.wingate.libresa.net;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author util2
  */
 public class ChatMessage {
-    private String owner = "Anonymous";
-    private final ChatImage image;
-    private final String message;
+    private String owner;
+    private String message;
+    private Image image;
 
-    public ChatMessage(String message) {
+    public ChatMessage() {
+        this.owner = "Anonymous";
+        this.image = null;
+        this.message = "Just to say nothing!";
+    }
+
+    public ChatMessage(String owner, String message) {
+        this.owner = owner;
         this.image = null;
         this.message = message;
     }
-    
-    public ChatMessage(ChatImage image, String message) {
-        this.image = image;
-        this.message = message;
-    }
-    
-    public ChatMessage(String imagePath, String message) {
-        this.image = new ChatImage(imagePath);
-        this.message = message;
-    }
 
-    public ChatImage getImage() {
+    public Image getImage() {
         return image;
     }
-
+    
+    public void setImageWithPath(String imagePath){
+        image = new ImageIcon(imagePath).getImage();
+    }
+    
     public String getMessage() {
         return message;
     }
@@ -54,6 +66,43 @@ public class ChatMessage {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+    
+    public void get(DataInputStream dis) throws IOException {
+        // name
+        owner = dis.readUTF();
+        // image or not
+        if(dis.readBoolean() == true){
+            try(ByteArrayInputStream bais = new ByteArrayInputStream(dis.readAllBytes());){
+                image = ImageIO.read(bais);
+            }
+        }
+        // message
+        message = dis.readUTF();
+    }
+    
+    public void send(DataOutputStream dos) throws IOException {
+        // name
+        dos.writeUTF(owner);
+        // image or not
+        boolean hasImage = image != null;
+        dos.writeBoolean(hasImage);
+        if(hasImage){
+            try(ByteArrayOutputStream baos = new ByteArrayOutputStream();){
+                BufferedImage img = new BufferedImage(
+                        image.getWidth(null),
+                        image.getHeight(null),
+                        BufferedImage.TYPE_INT_ARGB
+                );
+                Graphics2D g2d = img.createGraphics();
+                g2d.drawImage(image, 0, 0, null);
+                g2d.dispose();
+                ImageIO.write(img, "png", baos);
+                dos.write(baos.toByteArray());
+            }
+        }        
+        // message
+        dos.writeUTF(message);
     }
     
 }
