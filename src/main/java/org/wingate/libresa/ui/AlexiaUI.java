@@ -54,7 +54,7 @@ public class AlexiaUI extends JPanel {
             Alexia alexia = new Alexia(mainFrame, textPane, styledDocument, baseStyle);
             alexia.parseXML(alexiaScript);
         }catch(Exception exc){
-            System.err.println("Error in alexia script!");
+            System.err.println("Error in alexia script!\n" + exc.getMessage());
         }
     }
 }

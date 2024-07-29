@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
@@ -51,6 +52,8 @@ public class ChatPanel extends javax.swing.JPanel {
     private final Client client;
     
     private String uniqueName = "www.whatsup.people";
+    private String localSurname = "Newbie";
+    private String localImage = null;
 
     /**
      * Creates new form ChatPanel
@@ -160,6 +163,22 @@ public class ChatPanel extends javax.swing.JPanel {
         this.uniqueName = uniqueName;
     }
 
+    public String getLocalSurname() {
+        return localSurname;
+    }
+
+    public void setLocalSurname(String localSurname) {
+        this.localSurname = localSurname;
+    }
+
+    public String getLocalImage() {
+        return localImage;
+    }
+
+    public void setLocalImage(String localImage) {
+        this.localImage = localImage;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -169,14 +188,21 @@ public class ChatPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popSet = new javax.swing.JPopupMenu();
+        popmSurname = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         textPane = new javax.swing.JTextPane();
-        jToolBar1 = new javax.swing.JToolBar();
-        btnCool = new javax.swing.JButton();
-        btnSend = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        tfName = new javax.swing.JTextField();
         tfSendText = new javax.swing.JTextField();
+        btnOK = new javax.swing.JButton();
+
+        popmSurname.setText("Set a surname");
+        popmSurname.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmSurnameActionPerformed(evt);
+            }
+        });
+        popSet.add(popmSurname);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -186,63 +212,52 @@ public class ChatPanel extends javax.swing.JPanel {
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jToolBar1.setRollover(true);
-
-        btnCool.setText("Emoji");
-        btnCool.setFocusable(false);
-        btnCool.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnCool.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnCool.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCoolActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btnCool);
-
-        btnSend.setText("Send");
-        btnSend.setFocusable(false);
-        btnSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnSend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSendActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btnSend);
-
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        tfName.setText("Newbie");
-        jPanel1.add(tfName, java.awt.BorderLayout.WEST);
+        tfSendText.setComponentPopupMenu(popSet);
         jPanel1.add(tfSendText, java.awt.BorderLayout.CENTER);
 
-        jToolBar1.add(jPanel1);
+        btnOK.setText("Send");
+        btnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOKActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnOK, java.awt.BorderLayout.EAST);
 
-        add(jToolBar1, java.awt.BorderLayout.SOUTH);
+        add(jPanel1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCoolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCoolActionPerformed
-        // Emoji here TODO
-    }//GEN-LAST:event_btnCoolActionPerformed
-
-    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         // Send text
-        ChatMessage cm = new ChatMessage(tfName.getText(), tfSendText.getText());
+        ChatMessage cm = new ChatMessage(localSurname, tfSendText.getText());
         // 1. Send to network
         readMessage(cm);
         // 2. Display
         writeMessage(cm);
-    }//GEN-LAST:event_btnSendActionPerformed
+        // 3. Clear text
+        tfSendText.setText("");
+    }//GEN-LAST:event_btnOKActionPerformed
+
+    private void popmSurnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmSurnameActionPerformed
+        // Define surname
+        String s = JOptionPane.showInputDialog("Please type a surname:");
+        if(s == null || s.isEmpty()){
+            localSurname = "Anonymous";
+        }else{
+            localSurname = s;
+        }
+    }//GEN-LAST:event_popmSurnameActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCool;
-    private javax.swing.JButton btnSend;
+    private javax.swing.JButton btnOK;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JPopupMenu popSet;
+    private javax.swing.JMenuItem popmSurname;
     private javax.swing.JTextPane textPane;
-    private javax.swing.JTextField tfName;
     private javax.swing.JTextField tfSendText;
     // End of variables declaration//GEN-END:variables
+
 }
